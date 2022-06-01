@@ -1,11 +1,15 @@
 var express = require('express');
 var router = express.Router();
+
+var auth = require('../middleware/authenticate');
+
 var { PrismaClient, Prisma } = require('@prisma/client');
 var prisma = new PrismaClient();
 
 router
-  .get('/', (req, res, next) => {
-    res.send('Hello from cars Route !!');
+  .get('/', auth, async (req, res, next) => {
+    var cars = await prisma.car.findMany({});
+    res.status(200).send(cars);
   })
   .post('/', async function (req, res, next) {
     var { nom, model, ownerId, type } = req.body;
