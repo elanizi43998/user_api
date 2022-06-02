@@ -7,7 +7,7 @@ var { PrismaClient, Prisma } = require('@prisma/client');
 var prisma = new PrismaClient();
 
 router
-  .get('/', auth, async (req, res, next) => {
+  .get('/', auth.verifyToken, async (req, res, next) => {
     var cars = await prisma.car.findMany({});
     res.status(200).send(cars);
   })

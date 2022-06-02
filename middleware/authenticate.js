@@ -1,13 +1,13 @@
 var jwt = require('jsonwebtoken');
 
-verifyToken = (req, res, next) => {
+exports.verifyToken = (req, res, next) => {
   if (!req.headers.authorization) {
-    var error = { msg: 'Unauthorized request' };
+    let error = { msg: 'Unauthorized request you need to login !! ' };
     return res.status(401).send(error);
   }
   try {
-    var token = req.headers.authorization.split(' ')[1];
-    var decoded = jwt.verify(token.toString(), process.env.JWT_SECRET_KEY);
+    let token = req.headers.authorization.split(' ')[1];
+    let decoded = jwt.verify(token.toString(), process.env.JWT_SECRET_KEY);
     req.user = decoded;
     return next();
   } catch (error) {
@@ -15,4 +15,16 @@ verifyToken = (req, res, next) => {
   }
 };
 
-module.exports = verifyToken;
+exports.userPermission = (req, res, next) => {
+  let { id } = req.params;
+  let { user_id } = req.user;
+
+  if (user_id === +id) {
+    return next();
+  } else {
+    let error = {
+      msg: 'Unauthorized request, you are not allowed to perform this operation !!',
+    };
+    return res.status(401).send(error);
+  }
+};
